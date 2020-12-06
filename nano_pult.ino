@@ -2,7 +2,7 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-//#define ENABLE_DEBIG
+#define ENABLE_DEBIG
 #define BUTTON_WAIT_STATE_PERIOD_MS 1
 #define BUTTON_SEND_STATE_PERIOD 200
 
@@ -99,7 +99,7 @@ void setup() {
 //#define PROXY_MODE
 static char proxy_byffer[10];
 static char * pb_cur_p(proxy_byffer);
-static float packet[2];
+static float packet[2] = {0.f, 0.f};
 static unsigned long start_time = 0;
 
 void loop() {
@@ -112,25 +112,24 @@ void loop() {
 
 			//1. end off buffer
 			if (pb_cur_p == &proxy_byffer[sizeof(proxy_byffer)]) {
-			// Serial.println("1.");
+				// Serial.println("1.");
 
-			//2. check packet
-			if (proxy_byffer[0] == 'A' && proxy_byffer[sizeof(proxy_byffer) -1] == 'B') {
-				// Serial.println("2.");
+				//2. check packet
+				if (proxy_byffer[0] == 'A' && proxy_byffer[sizeof(proxy_byffer) -1] == 'B') {
+					// Serial.println("2.");
 
-				packet[0] = *((float *)(&proxy_byffer[1]));
-				packet[1] = *((float *)(&proxy_byffer[5]));
-				pb_cur_p = proxy_byffer;
-			//3. move buffer
-			} else {
-				// Serial.println("3.");
+					packet[0] = *((float *)(&proxy_byffer[1]));
+					packet[1] = *((float *)(&proxy_byffer[5]));
+					pb_cur_p = proxy_byffer;
+				//3. move buffer
+				} else {
+					// Serial.println("3.");
 
-				for (unsigned int i = 0; i < sizeof(proxy_byffer) - 1; i++) {
-				proxy_byffer[i] = proxy_byffer[i + 1];
+					for (unsigned int i = 0; i < sizeof(proxy_byffer) - 1; i++) {
+						proxy_byffer[i] = proxy_byffer[i + 1];
+					}
+					pb_cur_p = &proxy_byffer[sizeof(proxy_byffer) - 1];
 				}
-
-				pb_cur_p = &proxy_byffer[sizeof(proxy_byffer) - 1];
-			}
 			}
 		}
 
@@ -151,35 +150,35 @@ void loop() {
 	#else
 		#ifdef ENABLE_DEBIG
 			if (button_1.update()) {
-				Serial.println("button 1 sate height");
+				Serial.println("send w");
 				unsigned long ch = 'w';
 				if (!radio.write(&ch, sizeof(ch))) {
 				Serial.println("failed send w");
 				}
 			}
 			if (button_2.update()) {
-				Serial.println("button 2 sate height");
+				Serial.println("send s");
 				unsigned long ch = 's';
 				if (!radio.write(&ch, sizeof(ch))) {
 				Serial.println("failed send s");
 				}
 			}
 			if (button_3.update()) {
-				Serial.println("button 3 sate height");
+				Serial.println("send a");
 				unsigned long ch = 'a';
 				if (!radio.write(&ch, sizeof(ch))) {
 				Serial.println("failed send a");
 				}
 			}
 			if (button_4.update()) {
-				Serial.println("button 4 sate height");
+				Serial.println("send d");
 				unsigned long ch = 'd';
 				if (!radio.write(&ch, sizeof(ch))) {
 				Serial.println("failed send d");
 				}
 			}
 			if (button_5.update()) {
-				Serial.println("button 5 sate height");
+				Serial.println("send space");
 				unsigned long ch = ' ';
 				if (!radio.write(&ch, sizeof(ch))) {
 				Serial.println("failed send space");
